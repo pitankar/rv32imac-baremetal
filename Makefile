@@ -22,21 +22,22 @@
 # SOFTWARE.
 #
 
-# Config to be set by the user
-FS_SDK_PATH ?= ~/Downloads/.fs/SiFive
+# execute ./scripts/setup.sh to get the tools
+TOOLS ?= toolchain
 
-# Infer the path of tools from the FS_SDK_PATH
-RISC_V_GCC_PATH_BIN ?= $(FS_SDK_PATH)/riscv64-unknown-elf-gcc-10.1.0-2020.08.2/bin/riscv64-unknown-elf
-OPENOCD_PATH ?= $(FS_SDK_PATH)/riscv-openocd-0.10.0-2020.11.0/bin
+# Infer the path of tools from the TOOLS
+RISC_V_GCC_PATH_BIN ?= $(TOOLS)/gcc
+OPENOCD_PATH ?= $(TOOLS)/openocd
 
-# Config
-OPENOC_CONFIG_FILE = $(FS_SDK_PATH)/riscv-openocd-0.10.0-2020.11.0/share/openocd/scripts/board/sifive-hifive1-revb.cfg
+# openocd board config
+OPENOC_CONFIG_FILE = $(TOOLS)/openocd/share/openocd/scripts/board/sifive-hifive1-revb.cfg
 
-# Tools
-RISCV_GCC = $(RISC_V_GCC_PATH_BIN)-gcc
-RISCV_GDB = $(RISC_V_GCC_PATH_BIN)-gdb
+# gcc and gdb
+RISCV_GCC = $(RISC_V_GCC_PATH_BIN)/bin/riscv64-unknown-elf-gcc
+RISCV_GDB = $(RISC_V_GCC_PATH_BIN)/bin/riscv64-unknown-elf-gdb
 
-OPENOCD = $(OPENOCD_PATH)/openocd 
+# openocd
+OPENOCD = $(OPENOCD_PATH)/bin/openocd 
 
 # compiler options
 CFLAGS = -march=rv32imac -mabi=ilp32 -Wall -O0 -nostdlib -nostartfiles -ffreestanding -ggdb
@@ -44,7 +45,7 @@ CFLAGS = -march=rv32imac -mabi=ilp32 -Wall -O0 -nostdlib -nostartfiles -ffreesta
 # Firmware
 FIRMWARE = firmware
 
-# build
+# build/
 BUILD = build
 
 # source Files

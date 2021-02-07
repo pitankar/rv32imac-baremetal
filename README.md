@@ -8,9 +8,10 @@ This repository implements the basic bare metal code that if needed to boot up a
 ├── Makefile
 ├── README.md
 ├── scripts
-│   ├── bm_test.gdb
-│   ├── debug.gdb
-│   └── layout.ld
+│   ├── bm_test.gdb
+│   ├── debug.gdb
+│   ├── layout.ld
+│   └── setup.sh
 └── src
     ├── main.c
     └── start.S
@@ -24,8 +25,54 @@ To assist with the compiling, uploading the code and debugging using gdb, we hav
 
 ---
 # Setup
-You would need to download the Freedom Studio SDK and set `FS_SDK_PATH` variable within the Makefile. You can get it from here: [Freedom Studio — v2020.11.0](https://github.com/sifive/freedom-studio/releases/tag/v2020.11.1)
+You will need the `risc-v-gcc` and `openocd` to be able to compile and upload the output to the board. The `setup.sh` script in the `scripts` directory can be used to automatically setup the tools required. The script will download and extract the right versions of `gcc` and `openocd` which are also available as part of [sifive freedom-tools - August 2020 Tools Release](https://github.com/sifive/freedom-tools/releases/tag/v2020.08.0). To launch the setup execute the following:
+```shell
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
 
+If all goes well you should see the following prints
+```shell
+❯ ./scripts/setup.sh
+--------------START------------------------
+Creating riscv_tools directory
+Downloading the right RISC-V GCC Version
+--2021-02-07 22:11:17--  https://static.dev.sifive.com/dev-tools/freedom-tools/v2020.08/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz
+Resolving static.dev.sifive.com (static.dev.sifive.com)... 13.249.214.81, 13.249.214.96, 13.249.214.75, ...
+Connecting to static.dev.sifive.com (static.dev.sifive.com)|13.249.214.81|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 356973576 (340M) [application/x-gzip]
+Saving to: ‘riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz’
+
+riscv64-unknown-elf-gcc-10.1.0-2020.08 100%[===========================================================================>] 340.44M  29.2MB/s    in 11s     
+
+2021-02-07 22:11:29 (29.8 MB/s) - ‘riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz’ saved [356973576/356973576]
+
+Downloading the right openocd Version
+--2021-02-07 22:11:29--  https://static.dev.sifive.com/dev-tools/freedom-tools/v2020.08/riscv-openocd-0.10.0-2020.08.1-x86_64-linux-ubuntu14.tar.gz
+Resolving static.dev.sifive.com (static.dev.sifive.com)... 13.249.214.53, 13.249.214.75, 13.249.214.96, ...
+Connecting to static.dev.sifive.com (static.dev.sifive.com)|13.249.214.53|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 3485902 (3.3M) [application/x-gzip]
+Saving to: ‘riscv-openocd-0.10.0-2020.08.1-x86_64-linux-ubuntu14.tar.gz’
+
+riscv-openocd-0.10.0-2020.08.1-x86_64- 100%[===========================================================================>]   3.32M  --.-KB/s    in 0.1s    
+
+2021-02-07 22:11:29 (22.8 MB/s) - ‘riscv-openocd-0.10.0-2020.08.1-x86_64-linux-ubuntu14.tar.gz’ saved [3485902/3485902]
+
+Extracting riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz
+Done!
+Extracting riscv-openocd-0.10.0-2020.08.1-x86_64-linux-ubuntu14.tar.gz
+Done!
+Doing Cleanup!
+Done!
+The Downloads are still retained in toolchain/ and will be used the next time this setup is run again!
+Please delete them manually if you think you may not need those!
+--------------END--------------------------
+```
+**Note that the downloads are retained and used next time the setup is run again.**
+
+----
 ## Testing setup
 If you want to ensure that everything work as expected then you can build the default source without any changes and upload to the board. You can run the following in sequence:
 
