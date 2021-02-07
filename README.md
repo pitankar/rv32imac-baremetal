@@ -4,22 +4,23 @@ This repository implements the basic bare metal code that if needed to boot up a
 ## The Repo
 ```shell
 .
-├── layout.ld
 ├── License
-├── main.c
 ├── Makefile
 ├── README.md
 ├── scripts
-│   ├── bm_test.gdb
-│   └── debug.gdb
-└── start.S
+│   ├── bm_test.gdb
+│   ├── debug.gdb
+│   └── layout.ld
+└── src
+    ├── main.c
+    └── start.S
 ```
 ## Details 
 `main.c` and `start.S` are the source files where you can append code. The processor starts of the execution from `_start` (in `start.S`), loads the stack pointer register `sp` with address pointing to the end of the RAM and then jumps to `main()` (from `main.c`). `layout.ld` is a linker script that details out which section of the code goes where in the memory.
 
 To assist with the compiling, uploading the code and debugging using gdb, we have the following:
 - Makefile : Automates compiling, uploading and, starting and attaching to debug server.
-- scripts/ : This directory houses `gdb` scripts that are used to test the setup and to attach to the `gdb` server. 
+- scripts/ : This directory houses `gdb` scripts (along with the linker script `layout.ld`) that are used to test the setup and to attach to the `gdb` server. 
 
 ---
 # Setup

@@ -44,25 +44,32 @@ CFLAGS = -march=rv32imac -mabi=ilp32 -Wall -O0 -nostdlib -nostartfiles -ffreesta
 # Firmware
 FIRMWARE = firmware
 
-all: $(FIRMWARE).hex
+# build
+BUILD = build
 
-$(FIRMWARE).elf : start.S main.c
-	@$(RISCV_GCC) $(CFLAGS) start.S main.c -T layout.ld -o $@
+# source Files
+SRC = src/start.S \
+      src/main.c
 
-upload: $(FIRMWARE).elf
+all: $(BUILD)/$(FIRMWARE).elf
+
+$(BUILD)/$(FIRMWARE).elf: $(SRC)
+	@mkdir -p $(BUILD) 
+	@$(RISCV_GCC) $(CFLAGS) $^ -T scripts/layout.ld -o $@
+
+upload: $(BUILD)/$(FIRMWARE).elf
 	@sudo $(OPENOCD) -f $(OPENOC_CONFIG_FILE) -c "program $^ verify reset exit"
 
-debug: $(FIRMWARE).elf
+debug: $(BUILD)/$(FIRMWARE).elf
 	@sudo $(OPENOCD) -f $(OPENOC_CONFIG_FILE)
 
+gdb: $(BUILD)/$(FIRMWARE).elf
+	@$(RISCV_GDB) $^ --command=scripts/debug.gdb
 
-gdb:
-	@$(RISCV_GDB) firmware.elf --command=scripts/debug.gdb
-
-test:
-	@$(RISCV_GDB) firmware.elf --command=scripts/bm_test.gdb
+test: $(BUILD)/$(FIRMWARE).elf
+	@$(RISCV_GDB) $^ --command=scripts/bm_test.gdb
 
 clean:
-	@rm -f *.elf *.hex
+	@rm -rf build/
 
 .PHONY: clean
