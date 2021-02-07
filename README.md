@@ -1,7 +1,91 @@
 This repository implements the basic bare metal code that if needed to boot up and work with the [SparkFun RED-V RedBoard](https://www.sparkfun.com/products/15594) development board which has a [SiFive RISC-V FE310 SoC](https://www.sifive.com/chip-designer#fe310) on it. The repo is intended to be used by those who are wanting to learn `assembly` language or `embedded C` and are looking for a development environment that allows them to tinker and explore starting at the very bottom of the things.
+
+# How it works
+## The Repo
+```shell
+.
+├── layout.ld
+├── License
+├── main.c
+├── Makefile
+├── README.md
+├── scripts
+│   ├── bm_test.gdb
+│   └── debug.gdb
+└── start.S
+```
+## Details 
+`main.c` and `start.S` are the source files where you can append code. The processor starts of the execution from `_start` (in `start.S`), loads the stack pointer register `sp` with address pointing to the end of the RAM and then jumps to `main()` (from `main.c`). `layout.ld` is a linker script that details out which section of the code goes where in the memory.
+
+To assist with the compiling, uploading the code and debugging using gdb, we have the following:
+- Makefile : Automates compiling, uploading and, starting and attaching to debug server.
+- scripts/ : This directory houses `gdb` scripts that are used to test the setup and to attach to the `gdb` server. 
+
+---
 # Setup
 You would need to download the Freedom Studio SDK and set `FS_SDK_PATH` variable within the Makefile. You can get it from here: [Freedom Studio — v2020.11.0](https://github.com/sifive/freedom-studio/releases/tag/v2020.11.1)
 
+## Testing setup
+If you want to ensure that everything work as expected then you can build the default source without any changes and upload to the board. You can run the following in sequence:
+
+Build the source and upload to board
+```shell
+make upload
+```
+
+Start a debug session
+```shell
+make debug
+```
+
+Wait until you see
+```shell
+...
+Info : Listening on port 3333 for gdb connections
+Info : Found flash device 'issi is25lp032' (ID 0x0016609d)
+Ready for Remote Connections
+Info : Listening on port 6666 for tcl connections
+Info : Listening on port 4444 for telnet connections
+```
+
+In a separate terminal (in the root location of this repo) start the `gdb` session
+```
+make test
+```
+Following output should get printed 
+```
+❯ make test
+GNU gdb (SiFive GDB 9.1.0-2020.08.2) 9.1
+Copyright (C) 2020 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "--host=x86_64-pc-linux-gnu --target=riscv64-unknown-elf".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://github.com/sifive/freedom-tools/issues>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from firmware.elf...
+0x00001004 in ?? ()
+JTAG tap: riscv.cpu tap/device found: 0x20000913 (mfg: 0x489 (SiFive Inc), part: 0x0000, ver: 0x2)
+keep_alive() was not invoked in the 1000 ms timelimit. GDB alive packet not sent! (1877 ms). Workaround: increase "set remotetimeout" in GDB
+Disabling abstract command writes to CSRs.
+$1 = 42
+A debugging session is active.
+
+        Inferior 1 [Remote target] will be detached.
+
+Quit anyway? (y or n) [answered Y; input not from terminal]
+[Inferior 1 (Remote target) detached]
+```
+The `$1 = 42` print confirms that everything is working as expected!
+
+---
 # Flashing/Uploading to Board
 Use the following command to build and upload the code to the board
 ```shell
@@ -68,63 +152,6 @@ keep_alive() was not invoked in the 1000 ms timelimit. GDB alive packet not sent
 ```
 
 `monitor` and `gdb` can be used to debug further.
-
----
-# Testing setup
-If you want to ensure that everything work as expected then you can build the default source without any changes and upload to the board. You can run the following in sequence:
-- Build the source and upload to board
-```shell
-make upload
-```
-- Start a debug session
-```shell
-make debug
-```
-- Wait until you see
-```shell
-...
-Info : Listening on port 3333 for gdb connections
-Info : Found flash device 'issi is25lp032' (ID 0x0016609d)
-Ready for Remote Connections
-Info : Listening on port 6666 for tcl connections
-Info : Listening on port 4444 for telnet connections
-```
-- In a separate terminal (in the root location of this repo) start the `gdb` session
-```
-make test
-```
-Following output will should get printed 
-```
-❯ make test
-GNU gdb (SiFive GDB 9.1.0-2020.08.2) 9.1
-Copyright (C) 2020 Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
-Type "show copying" and "show warranty" for details.
-This GDB was configured as "--host=x86_64-pc-linux-gnu --target=riscv64-unknown-elf".
-Type "show configuration" for configuration details.
-For bug reporting instructions, please see:
-<https://github.com/sifive/freedom-tools/issues>.
-Find the GDB manual and other documentation resources online at:
-    <http://www.gnu.org/software/gdb/documentation/>.
-
-For help, type "help".
-Type "apropos word" to search for commands related to "word"...
-Reading symbols from firmware.elf...
-0x00001004 in ?? ()
-JTAG tap: riscv.cpu tap/device found: 0x20000913 (mfg: 0x489 (SiFive Inc), part: 0x0000, ver: 0x2)
-keep_alive() was not invoked in the 1000 ms timelimit. GDB alive packet not sent! (1877 ms). Workaround: increase "set remotetimeout" in GDB
-Disabling abstract command writes to CSRs.
-$1 = 42
-A debugging session is active.
-
-        Inferior 1 [Remote target] will be detached.
-
-Quit anyway? (y or n) [answered Y; input not from terminal]
-[Inferior 1 (Remote target) detached]
-```
-The `$1 = 42` print confirms that everything is working as expected!
 
 ---
 # Trouble Shooting
