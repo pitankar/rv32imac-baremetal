@@ -23,7 +23,16 @@
 #
 
 # execute ./scripts/setup.sh to get the tools
-TOOLS ?= toolchain
+TOOLS = toolchain
+
+# automatically initiate toolchain installation if it was not present already
+ifeq ($(wildcard $(TOOLS)),)
+setup: ./scripts/setup.sh 
+	@echo "Toolchain not found! Initiating a install!"
+	@chmod +x ./scripts/setup.sh
+	@./scripts/setup.sh
+	@echo "Please rerun make"
+endif
 
 # Infer the path of tools from the TOOLS
 RISC_V_GCC_PATH_BIN ?= $(TOOLS)/gcc
@@ -49,14 +58,17 @@ FIRMWARE = firmware
 BUILD = build
 
 # source Files
+INC = src/drv/include
+
 SRC = src/start.S \
+	  src/drv/gpio.c \
       src/main.c
 
 all: $(BUILD)/$(FIRMWARE).elf
 
 $(BUILD)/$(FIRMWARE).elf: $(SRC)
 	@mkdir -p $(BUILD) 
-	@$(RISCV_GCC) $(CFLAGS) $^ -T scripts/layout.ld -o $@
+	@$(RISCV_GCC) $(CFLAGS) -I$(INC) $^ -T scripts/layout.ld -o $@
 
 upload: $(BUILD)/$(FIRMWARE).elf
 	@sudo $(OPENOCD) -f $(OPENOC_CONFIG_FILE) -c "program $^ verify reset exit"

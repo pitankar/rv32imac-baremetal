@@ -22,31 +22,43 @@
  * SOFTWARE.
  */
 
-#include <gpio.h>
+#ifndef __GPIO_H__
+#define __GPIO_H__
 
-#define BLUE 5
-#define ON (1 << 5)
-#define OFF (0 << 5)
+#include <stdint.h>
 
-void delay() {
-    for (int i=0; i<500000; i++);
-}
+#define GPIO_BASE (0x10012000U)
 
-int main()
-{
-    // TODO: this is a crude way of doing it.
-    // replace this with nice driver interface
-    volatile gpio *g = get_gpio_base();
-    
-    g->output_enPin = 1 << BLUE;
-    g->out_xorOutput = 0x00000000;
+/**
+ * @brief Maps the GPIO block.
+ *        Note that the variable name are in 1:1
+ *        correspondance with that in the Spec.
+ *        For the Soc.
+ */
+typedef struct _gpio {
+    uint32_t input_valPin; 
+    uint32_t input_enPin;
+    uint32_t output_enPin;
+    uint32_t output_valOutput; 
+    uint32_t pueInternal;
+    uint32_t dsPin;
+    uint32_t rise_ieRise;
+    uint32_t rise_ipRise;
+    uint32_t fall_ieFall;
+    uint32_t fall_ipFall;
+    uint32_t high_ieHigh;
+    uint32_t high_ipHigh;
+    uint32_t low_ieLow;
+    uint32_t low_ipLow;
+    uint32_t out_xorOutput;
+} gpio;
 
-    while (1) {
-        g->output_valOutput = ON;
-        delay();
-        g->output_valOutput = OFF;
-        delay();
-    }
-    
-    return 0;
-}
+
+/**
+ * @brief Get the gpio base object
+ * 
+ * @return gpio* 
+ */
+volatile gpio* get_gpio_base(void);
+
+#endif

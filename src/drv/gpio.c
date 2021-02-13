@@ -24,29 +24,12 @@
 
 #include <gpio.h>
 
-#define BLUE 5
-#define ON (1 << 5)
-#define OFF (0 << 5)
+/**
+ * @brief Holds the GPIO base address, local to this file!
+ * 
+ */
+static volatile gpio *__gpio_base = (volatile gpio*)GPIO_BASE;
 
-void delay() {
-    for (int i=0; i<500000; i++);
-}
-
-int main()
-{
-    // TODO: this is a crude way of doing it.
-    // replace this with nice driver interface
-    volatile gpio *g = get_gpio_base();
-    
-    g->output_enPin = 1 << BLUE;
-    g->out_xorOutput = 0x00000000;
-
-    while (1) {
-        g->output_valOutput = ON;
-        delay();
-        g->output_valOutput = OFF;
-        delay();
-    }
-    
-    return 0;
+volatile gpio* get_gpio_base(void) {
+    return __gpio_base;
 }

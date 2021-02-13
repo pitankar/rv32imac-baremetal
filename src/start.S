@@ -22,8 +22,9 @@
 # SOFTWARE.
 #
 
+# Execution starts from here
 .globl _start
 _start:
-    lui sp, 0x80004
-    jal main
-1:  j 1b
+    lui sp, 0x80004 # Load the SP with end of RAM
+    jal main        # Jump to main()
+1:  j 1b            # Spin forever
