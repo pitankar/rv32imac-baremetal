@@ -50,15 +50,27 @@ typedef struct _gpio {
     uint32_t high_ipHigh;
     uint32_t low_ieLow;
     uint32_t low_ipLow;
+    uint32_t iof_en;
+    uint32_t iof_sel;
     uint32_t out_xorOutput;
 } gpio;
 
+typedef enum _gpio_config {
+    SPI,
+    PWM,
+    UART,
+    I2C,
+    INPUT,
+    OUTPUT,
+    INT_RISE_HIGH,
+    INT_RISE_LOW,
+    INT_LVL_HIGH,
+    INT_LVL_LOW
+} gpio_config_e;
 
-/**
- * @brief Get the gpio base object
- * 
- * @return gpio* 
- */
-volatile gpio* get_gpio_base(void);
+void gpio_init(void);
+int gpio_pin_config(uint8_t pin_no, gpio_config_e config);
+int gpio_pin_set(int pin_no);
+int gpio_pin_clear(int pin_no);
 
 #endif

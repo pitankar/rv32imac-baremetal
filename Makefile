@@ -31,7 +31,7 @@ setup: ./scripts/setup.sh
 	@echo "Toolchain not found! Initiating a install!"
 	@chmod +x ./scripts/setup.sh
 	@./scripts/setup.sh
-	@echo "Please rerun make"
+	@make
 endif
 
 # Infer the path of tools from the TOOLS
@@ -78,9 +78,6 @@ debug: $(BUILD)/$(FIRMWARE).elf
 
 gdb: $(BUILD)/$(FIRMWARE).elf
 	@$(RISCV_GDB) $^ --command=scripts/debug.gdb
-
-test: $(BUILD)/$(FIRMWARE).elf
-	@$(RISCV_GDB) $^ --command=scripts/bm_test.gdb
 
 clean:
 	@rm -rf build/

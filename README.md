@@ -8,16 +8,20 @@ This repository implements the basic bare metal code that if needed to boot up a
 ├── Makefile
 ├── README.md
 ├── scripts
-│   ├── bm_test.gdb
 │   ├── debug.gdb
 │   ├── layout.ld
 │   └── setup.sh
 └── src
+    ├── drv
+    │   ├── gpio.c
+    │   └── include
+    │       └── gpio.h
     ├── main.c
     └── start.S
+
 ```
 ## Details 
-`main.c` and `start.S` are the source files where you can append code. The processor starts of the execution from `_start` (in `start.S`), loads the stack pointer register `sp` with address pointing to the end of the RAM and then jumps to `main()` (from `main.c`). `layout.ld` is a linker script that details out which section of the code goes where in the memory.
+`main.c` and `start.S` are the source files where you can append code. The processor starts off the execution from `_start` (in `start.S`), loads the stack pointer register `sp` with address pointing to the end of the RAM and then jumps to `main()` (from `main.c`). `layout.ld` is a linker script that details out which section of the code goes where in the memory. The `drv` directory holds the driver for various peripherial blocks on the SoC.
 
 To assist with the compiling, uploading the code and debugging using gdb, we have the following:
 - Makefile : Automates compiling, uploading and, starting and attaching to debug server.
@@ -26,6 +30,12 @@ To assist with the compiling, uploading the code and debugging using gdb, we hav
 ---
 # Setup
 You will need the `risc-v-gcc` and `openocd` to be able to compile and upload the output to the board. The `setup.sh` script in the `scripts` directory can be used to automatically setup the tools required. The script will download and extract the right versions of `gcc` and `openocd` which are also available as part of [sifive freedom-tools - August 2020 Tools Release](https://github.com/sifive/freedom-tools/releases/tag/v2020.08.0). To launch the setup execute the following:
+```
+make
+```
+
+Make detects the missing `toolchain/` directory and executes the following on user's behalf. If Make fails for whatever reason, you can manually execute the following to install the required tools.
+
 ```shell
 chmod +x scripts/setup.sh
 ./scripts/setup.sh
@@ -70,68 +80,20 @@ The Downloads are still retained in toolchain/ and will be used the next time th
 Please delete them manually if you think you may not need those!
 --------------END--------------------------
 ```
+Make may also attempt to build the source and you may see few more prints.
+
 **Note that the downloads are retained and used next time the setup is run again.**
 
 ----
 ## Testing setup
-If you want to ensure that everything work as expected then you can build the default source without any changes and upload to the board. You can run the following in sequence:
+If you want to ensure that everything works as expected then you can build the default source without any changes and upload to the board. You can run the following in sequence:
 
 Build the source and upload to board
 ```shell
 make upload
 ```
 
-Start a debug session
-```shell
-make debug
-```
-
-Wait until you see
-```shell
-...
-Info : Listening on port 3333 for gdb connections
-Info : Found flash device 'issi is25lp032' (ID 0x0016609d)
-Ready for Remote Connections
-Info : Listening on port 6666 for tcl connections
-Info : Listening on port 4444 for telnet connections
-```
-
-In a separate terminal (in the root location of this repo) start the `gdb` session
-```
-make test
-```
-Following output should get printed 
-```
-❯ make test
-GNU gdb (SiFive GDB 9.1.0-2020.08.2) 9.1
-Copyright (C) 2020 Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
-Type "show copying" and "show warranty" for details.
-This GDB was configured as "--host=x86_64-pc-linux-gnu --target=riscv64-unknown-elf".
-Type "show configuration" for configuration details.
-For bug reporting instructions, please see:
-<https://github.com/sifive/freedom-tools/issues>.
-Find the GDB manual and other documentation resources online at:
-    <http://www.gnu.org/software/gdb/documentation/>.
-
-For help, type "help".
-Type "apropos word" to search for commands related to "word"...
-Reading symbols from firmware.elf...
-0x00001004 in ?? ()
-JTAG tap: riscv.cpu tap/device found: 0x20000913 (mfg: 0x489 (SiFive Inc), part: 0x0000, ver: 0x2)
-keep_alive() was not invoked in the 1000 ms timelimit. GDB alive packet not sent! (1877 ms). Workaround: increase "set remotetimeout" in GDB
-Disabling abstract command writes to CSRs.
-$1 = 42
-A debugging session is active.
-
-        Inferior 1 [Remote target] will be detached.
-
-Quit anyway? (y or n) [answered Y; input not from terminal]
-[Inferior 1 (Remote target) detached]
-```
-The `$1 = 42` print confirms that everything is working as expected!
+If you see the `green` LED blinking, then everything is working as expected! :)
 
 ---
 # Flashing/Uploading to Board

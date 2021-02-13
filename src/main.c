@@ -24,9 +24,7 @@
 
 #include <gpio.h>
 
-#define BLUE 5
-#define ON (1 << 5)
-#define OFF (0 << 5)
+#define GREEN_LED  17
 
 void delay() {
     for (int i=0; i<500000; i++);
@@ -34,17 +32,14 @@ void delay() {
 
 int main()
 {
-    // TODO: this is a crude way of doing it.
-    // replace this with nice driver interface
-    volatile gpio *g = get_gpio_base();
-    
-    g->output_enPin = 1 << BLUE;
-    g->out_xorOutput = 0x00000000;
+    gpio_init();
+    gpio_pin_config(GREEN_LED, OUTPUT);
 
     while (1) {
-        g->output_valOutput = ON;
+        gpio_pin_clear(GREEN_LED);
         delay();
-        g->output_valOutput = OFF;
+
+        gpio_pin_set(GREEN_LED);
         delay();
     }
     
