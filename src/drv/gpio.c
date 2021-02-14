@@ -31,7 +31,7 @@
  * @brief Holds the GPIO base address, local to this file!
  * 
  */
-static volatile gpio *__gpio_base = (volatile gpio*)GPIO_BASE;
+static volatile gpio_s *__gpio_base = (volatile gpio_s*)GPIO_BASE;
 
 static gpio_config_e gpio_hw_function[32] = {
     PWM,        // 0
@@ -162,7 +162,7 @@ int gpio_pin_config(uint8_t pin_no, gpio_config_e config) {
 }
 
 int gpio_pin_set(int pin_no) {
-    if (pin_no < 0 || pin_no > 31)
+    if (pin_no < GPIO_0 || pin_no > GPIO_23)
         return -1;
     
     SET_BIT(__gpio_base->output_valOutput, pin_no);
@@ -170,7 +170,7 @@ int gpio_pin_set(int pin_no) {
 }
 
 int gpio_pin_clear(int pin_no) {
-    if (pin_no < 0 || pin_no > 31)
+    if (pin_no < GPIO_0 || pin_no > GPIO_23)
         return -1;
     
     CLEAR_BIT(__gpio_base->output_valOutput, pin_no);

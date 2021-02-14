@@ -29,13 +29,38 @@
 
 #define GPIO_BASE (0x10012000U)
 
+#define GPIO_0  0
+#define GPIO_1  1
+#define GPIO_2  2
+#define GPIO_3  3
+#define GPIO_4  4
+#define GPIO_5  5
+#define GPIO_6  6
+#define GPIO_7  7
+#define GPIO_8  8
+#define GPIO_9  9
+#define GPIO_10 10
+#define GPIO_11 11
+#define GPIO_12 12
+#define GPIO_13 13
+#define GPIO_14 14
+#define GPIO_15 15
+#define GPIO_16 16
+#define GPIO_17 17
+#define GPIO_18 18
+#define GPIO_19 19
+#define GPIO_20 20
+#define GPIO_21 21
+#define GPIO_22 22
+#define GPIO_23 23
+
 /**
  * @brief Maps the GPIO block.
  *        Note that the variable name are in 1:1
  *        correspondance with that in the Spec.
  *        For the Soc.
  */
-typedef struct _gpio {
+typedef struct _gpio_s {
     uint32_t input_valPin; 
     uint32_t input_enPin;
     uint32_t output_enPin;
@@ -53,9 +78,9 @@ typedef struct _gpio {
     uint32_t iof_en;
     uint32_t iof_sel;
     uint32_t out_xorOutput;
-} gpio;
+} gpio_s;
 
-typedef enum _gpio_config {
+typedef enum _gpio_config_e {
     SPI,
     PWM,
     UART,
