@@ -62,6 +62,7 @@ INC = src/drv/include
 
 SRC = src/start.S \
 	  src/drv/gpio.c \
+	  src/drv/uart.c \
       src/main.c
 
 all: $(BUILD)/$(FIRMWARE).elf

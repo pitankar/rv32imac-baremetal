@@ -14,8 +14,10 @@ This repository implements the basic bare metal code that if needed to boot up a
 └── src
     ├── drv
     │   ├── gpio.c
+    │   ├── uart.c
     │   └── include
-    │       └── gpio.h
+    │       ├── gpio.h
+    │       └── uart.h
     ├── main.c
     └── start.S
 
@@ -93,7 +95,7 @@ Build the source and upload to board
 make upload
 ```
 
-If you see the `green` LED blinking, then everything is working as expected! :)
+If you see the `blue` LED blinking and `Hello, World! :)` on uart0 port, then everything is working as expected! :)
 
 ---
 # Flashing/Uploading to Board

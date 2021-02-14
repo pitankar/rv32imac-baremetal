@@ -22,31 +22,38 @@
  * SOFTWARE.
  */
 
-#include <gpio.h>
-#include <uart.h>
+#ifndef __UART_H__
+#define __UART_H__
 
-#define BLUE_LED GPIO_5
+#include <stdint.h>
 
-void blink_led(void) {
-    gpio_pin_config(BLUE_LED, OUTPUT);
+#define UART0_BASE (0x10013000UL)
+#define UART1_BASE (0x10023000UL)
 
+#define BAUD_115200 139
 
-    while (1) {
-        for (volatile int i = 0; i < 500000; i++);
-        gpio_pin_set(BLUE_LED);
-        for (volatile int i = 0; i < 500000; i++);
-        gpio_pin_clear(BLUE_LED);
-    }
-}
+#define UART0_TX 16
+#define UART0_RX 17
+#define UART1_TX 18
+#define UART1_RX 23
 
-int main()
-{
-    gpio_init();
-    uart_init(UART0);
+typedef enum _uart_e {
+    UART0,
+    UART1
+} uart_e;
 
-    printf("Hello, World! :)\n\r");
-    
-    blink_led();
+typedef struct _uart_s {
+    uint32_t txdata;
+    uint32_t rxdata;
+    uint32_t txctrl;
+    uint32_t rxctrl;
+    uint32_t ie;
+    uint32_t ip;
+    uint32_t div;
+} uart_s;
 
-    return 0;
-}
+void uart_init(uart_e uart);
+void uart_putc(uart_e uart, char c);
+void printf(const char *str);
+
+#endif

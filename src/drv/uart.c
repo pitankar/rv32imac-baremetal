@@ -25,28 +25,28 @@
 #include <gpio.h>
 #include <uart.h>
 
-#define BLUE_LED GPIO_5
+volatile uart_s *__uart0 = (volatile uart_s *)(UART0_BASE);
+volatile uart_s *__uart1 = (volatile uart_s *)(UART1_BASE);
 
-void blink_led(void) {
-    gpio_pin_config(BLUE_LED, OUTPUT);
+void uart_init(uart_e uart) {
+    uint32_t tx_pin, rx_pin;
+    volatile uart_s *u = uart ? __uart1 : __uart0;
 
+    u->div = BAUD_115200;
 
-    while (1) {
-        for (volatile int i = 0; i < 500000; i++);
-        gpio_pin_set(BLUE_LED);
-        for (volatile int i = 0; i < 500000; i++);
-        gpio_pin_clear(BLUE_LED);
-    }
+    tx_pin = uart ? UART1_TX : UART0_TX;
+    rx_pin = uart ? UART1_RX : UART0_RX;
+
+    gpio_pin_config(tx_pin, UART);
+    gpio_pin_config(rx_pin, UART);
 }
 
-int main()
-{
-    gpio_init();
-    uart_init(UART0);
+void uart_putc(uart_e uart, char c) {
+    volatile uart_s *u = uart ? __uart1 : __uart0;
+    u->txdata = c;
+}
 
-    printf("Hello, World! :)\n\r");
-    
-    blink_led();
-
-    return 0;
+void printf(const char *str) {
+    while (*str)
+        uart_putc(UART0, *(str++));
 }
