@@ -42,8 +42,11 @@ OPENOCD_PATH ?= $(TOOLS)/openocd
 OPENOC_CONFIG_FILE = $(TOOLS)/openocd/share/openocd/scripts/board/sifive-hifive1-revb.cfg
 
 # gcc and gdb
-RISCV_GCC = $(RISC_V_GCC_PATH_BIN)/bin/riscv64-unknown-elf-gcc
-RISCV_GDB = $(RISC_V_GCC_PATH_BIN)/bin/riscv64-unknown-elf-gdb
+RISCV_TOOL = $(RISC_V_GCC_PATH_BIN)/bin/riscv64-unknown-elf
+RISCV_GCC = $(RISCV_TOOL)-gcc
+RISCV_GDB = $(RISCV_TOOL)-gdb
+RISCV_NM = $(RISCV_TOOL)-nm
+RISCV_OBJDUMP = $(RISCV_TOOL)-objdump
 
 # openocd
 OPENOCD = $(OPENOCD_PATH)/bin/openocd 
@@ -70,6 +73,8 @@ all: $(BUILD)/$(FIRMWARE).elf
 $(BUILD)/$(FIRMWARE).elf: $(SRC)
 	@mkdir -p $(BUILD) 
 	@$(RISCV_GCC) $(CFLAGS) -I$(INC) $^ -T scripts/layout.ld -o $@
+	@$(RISCV_NM) $@ > $(BUILD)/$(FIRMWARE).sections
+	@$(RISCV_OBJDUMP) -d $@ > $(BUILD)/$(FIRMWARE).disassembly
 
 upload: $(BUILD)/$(FIRMWARE).elf
 	@sudo $(OPENOCD) -f $(OPENOC_CONFIG_FILE) -c "program $^ verify reset exit"
