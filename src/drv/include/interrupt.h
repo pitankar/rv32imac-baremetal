@@ -25,6 +25,8 @@
 #ifndef __INTERRUPT_H__
 #define __INTERRUPT_H__
 
+#include <hifive_rev_b.h>
+
 void trap_setup(void);
 
 #endif

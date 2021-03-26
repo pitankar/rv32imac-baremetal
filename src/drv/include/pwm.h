@@ -25,6 +25,7 @@
 #ifndef __PWM_H__
 #define __PWM_H__
 
+#include <hifive_rev_b.h>
 #include <stdint.h>
 
 typedef struct _pwmcfg_s {
