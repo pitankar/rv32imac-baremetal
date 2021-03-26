@@ -22,12 +22,9 @@
  * SOFTWARE.
  */
 
-#include <pwm.h>
+#ifndef __INTERRUPT_H__
+#define __INTERRUPT_H__
 
-/**
- * @brief Holds the PWM instance base address, local to this file!
- *
- */
-static volatile pwm_s *__pwm0_base = (volatile pwm_s*)PWM0_BASE;
-static volatile pwm_s *__pwm1_base = (volatile pwm_s*)PWM1_BASE;
-static volatile pwm_s *__pwm2_base = (volatile pwm_s*)PWM2_BASE;
+void trap_setup(void);
+
+#endif

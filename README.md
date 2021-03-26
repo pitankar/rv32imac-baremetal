@@ -14,20 +14,28 @@ This repository implements the basic bare metal code that if needed to boot up a
 └── src
     ├── drv
     │   ├── gpio.c
-    │   ├── uart.c
-    │   └── include
-    │       ├── gpio.h
-    │       └── uart.h
+    │   ├── include
+    │   │   ├── csr.h
+    │   │   ├── gpio.h
+    │   │   ├── hifive_rev_b.h
+    │   │   ├── interrupt.h
+    │   │   ├── pwm.h
+    │   │   ├── timer.h
+    │   │   └── uart.h
+    │   ├── interrupt.c
+    │   ├── pwm.c
+    │   ├── timer.c
+    │   └── uart.c
     ├── main.c
     └── start.S
 
 ```
-## Details 
+## Details
 `main.c` and `start.S` are the source files where you can append code. The processor starts off the execution from `_start` (in `start.S`), loads the stack pointer register `sp` with address pointing to the end of the RAM and then jumps to `main()` (from `main.c`). `layout.ld` is a linker script that details out which section of the code goes where in the memory. The `drv` directory holds the driver for various peripherial blocks on the SoC.
 
 To assist with the compiling, uploading the code and debugging using gdb, we have the following:
 - Makefile : Automates compiling, uploading and, starting and attaching to debug server.
-- scripts/ : This directory houses `gdb` scripts (along with the linker script `layout.ld`) that are used to test the setup and to attach to the `gdb` server. 
+- scripts/ : This directory houses `gdb` scripts (along with the linker script `layout.ld`) that are used to test the setup and to attach to the `gdb` server.
 
 ---
 # Setup
@@ -56,7 +64,7 @@ HTTP request sent, awaiting response... 200 OK
 Length: 356973576 (340M) [application/x-gzip]
 Saving to: ‘riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz’
 
-riscv64-unknown-elf-gcc-10.1.0-2020.08 100%[===========================================================================>] 340.44M  29.2MB/s    in 11s     
+riscv64-unknown-elf-gcc-10.1.0-2020.08 100%[===========================================================================>] 340.44M  29.2MB/s    in 11s
 
 2021-02-07 22:11:29 (29.8 MB/s) - ‘riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz’ saved [356973576/356973576]
 
@@ -68,7 +76,7 @@ HTTP request sent, awaiting response... 200 OK
 Length: 3485902 (3.3M) [application/x-gzip]
 Saving to: ‘riscv-openocd-0.10.0-2020.08.1-x86_64-linux-ubuntu14.tar.gz’
 
-riscv-openocd-0.10.0-2020.08.1-x86_64- 100%[===========================================================================>]   3.32M  --.-KB/s    in 0.1s    
+riscv-openocd-0.10.0-2020.08.1-x86_64- 100%[===========================================================================>]   3.32M  --.-KB/s    in 0.1s
 
 2021-02-07 22:11:29 (22.8 MB/s) - ‘riscv-openocd-0.10.0-2020.08.1-x86_64-linux-ubuntu14.tar.gz’ saved [3485902/3485902]
 
@@ -111,7 +119,7 @@ make debug
 ```
 you should see the following
 ```shell
-❯ make debug 
+❯ make debug
 Open On-Chip Debugger 0.10.0+dev (SiFive OpenOCD 0.10.0-2020.11.0)
 Licensed under GNU GPL v2
 For bug reports:

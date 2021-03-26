@@ -22,12 +22,17 @@
  * SOFTWARE.
  */
 
-#include <pwm.h>
+#ifndef __HIFIVE_REV_B_H__
+#define __HIFIVE_REV_B_H__
 
-/**
- * @brief Holds the PWM instance base address, local to this file!
- *
- */
-static volatile pwm_s *__pwm0_base = (volatile pwm_s*)PWM0_BASE;
-static volatile pwm_s *__pwm1_base = (volatile pwm_s*)PWM1_BASE;
-static volatile pwm_s *__pwm2_base = (volatile pwm_s*)PWM2_BASE;
+#define UART0_BASE  (0x10013000UL)
+#define UART1_BASE  (0x10023000UL)
+#define GPIO_BASE   (0x10012000UL)
+#define CLINT_BASE  (0x02000000UL)
+#define PWM0_BASE (0x10015000)
+#define PWM1_BASE (0x10025000)
+#define PWM2_BASE (0x10035000)
+
+#define PWM_NUM 4
+
+#endif

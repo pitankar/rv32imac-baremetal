@@ -22,12 +22,21 @@
  * SOFTWARE.
  */
 
-#include <pwm.h>
+#ifndef __TIEMR_H__
+#define __TIEMR_H__
 
-/**
- * @brief Holds the PWM instance base address, local to this file!
- *
- */
-static volatile pwm_s *__pwm0_base = (volatile pwm_s*)PWM0_BASE;
-static volatile pwm_s *__pwm1_base = (volatile pwm_s*)PWM1_BASE;
-static volatile pwm_s *__pwm2_base = (volatile pwm_s*)PWM2_BASE;
+#include <hifive_rev_b.h>
+#include <interrupt.h>
+#include <stdint.h>
+
+typedef void (*timer_handler_t)(void);
+
+typedef struct _timer {
+    uint32_t period;
+    timer_handler_t handler;
+} timer_s;
+
+void timer_setup(uint32_t period, timer_handler_t handler);
+void timer_hanlder(void);
+
+#endif

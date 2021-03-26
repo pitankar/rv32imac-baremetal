@@ -22,12 +22,47 @@
  * SOFTWARE.
  */
 
-#include <pwm.h>
+#include <csr.h>
+#include <interrupt.h>
+#include <stdint.h>
+#include <timer.h>
 
-/**
- * @brief Holds the PWM instance base address, local to this file!
- *
- */
-static volatile pwm_s *__pwm0_base = (volatile pwm_s*)PWM0_BASE;
-static volatile pwm_s *__pwm1_base = (volatile pwm_s*)PWM1_BASE;
-static volatile pwm_s *__pwm2_base = (volatile pwm_s*)PWM2_BASE;
+#define MIE_OFFSET      (0x3)
+#define MIP_OFFSET      (0x7)
+#define MIE             (0x1 << MIE_OFFSET)
+#define MIP             (0x1 << MIP_OFFSET)
+
+#define LOCAL_INT_MASK  (0xF)
+#define CAUSE_TIMER     (0x7)
+
+#define m_interrupt __attribute__ ((aligned (8))) __attribute__ ((interrupt ("machine"))) void
+
+static m_interrupt trap_handler(void) {
+    uint32_t cause;
+
+    csr_r(cause, mcause);
+
+    cause &= LOCAL_INT_MASK;
+
+    switch (cause) {
+        case CAUSE_TIMER:
+            timer_hanlder();
+            break;
+        default:
+            return;
+    }
+}
+
+void trap_setup(void) {
+    uint32_t val;
+
+    csr_w(trap_handler, mtvec);
+
+    csr_r(val, mstatus);
+    val = val | MIE;
+    csr_w(val, mstatus);
+
+    csr_r(val, mie);
+    val = val | MIP;
+    csr_w(val, mie);
+}

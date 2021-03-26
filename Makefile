@@ -64,6 +64,8 @@ BUILD = build
 INC = src/drv/include
 
 SRC = src/start.S \
+	  src/drv/interrupt.c \
+	  src/drv/timer.c \
 	  src/drv/gpio.c \
 	  src/drv/pwm.c \
 	  src/drv/uart.c \

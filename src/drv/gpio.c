@@ -1,18 +1,18 @@
 /**
  * MIT License
- * 
+ *
  * Copyright (c) 2021 Piyush Itankar <pitankar@gmail.com>
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,7 +29,7 @@
 
 /**
  * @brief Holds the GPIO base address, local to this file!
- * 
+ *
  */
 static volatile gpio_s *__gpio_base = (volatile gpio_s*)GPIO_BASE;
 
@@ -66,13 +66,13 @@ static gpio_config_e gpio_hw_function[32] = {
     SPI,        // 29
     SPI,        // 30
     SPI         // 31
-}; 
+};
 
 static void clear_bit_congif(int pin_no) {
-    CLEAR_BIT(__gpio_base->input_valPin, pin_no); 
+    CLEAR_BIT(__gpio_base->input_valPin, pin_no);
     CLEAR_BIT(__gpio_base->input_enPin, pin_no);
     CLEAR_BIT(__gpio_base->output_enPin, pin_no);
-    CLEAR_BIT(__gpio_base->output_valOutput, pin_no); 
+    CLEAR_BIT(__gpio_base->output_valOutput, pin_no);
     CLEAR_BIT(__gpio_base->pueInternal, pin_no);
     CLEAR_BIT(__gpio_base->dsPin, pin_no);
     CLEAR_BIT(__gpio_base->rise_ieRise, pin_no);
@@ -90,10 +90,10 @@ static void clear_bit_congif(int pin_no) {
 
 void gpio_init(void) {
     // Set everything to 0
-    __gpio_base->input_valPin = 0; 
+    __gpio_base->input_valPin = 0;
     __gpio_base->input_enPin = 0;
     __gpio_base->output_enPin = 0;
-    __gpio_base->output_valOutput = 0; 
+    __gpio_base->output_valOutput = 0;
     __gpio_base->pueInternal = 0;
     __gpio_base->dsPin = 0;
     __gpio_base->rise_ieRise = 0;
@@ -112,7 +112,7 @@ void gpio_init(void) {
 int gpio_pin_config(uint8_t pin_no, gpio_config_e config) {
     if (pin_no < 0 || pin_no > 31)
         return -1;
-    
+
     if (config < SPI || config > INT_LVL_LOW)
         return -2;
 
@@ -164,7 +164,7 @@ int gpio_pin_config(uint8_t pin_no, gpio_config_e config) {
 int gpio_pin_set(int pin_no) {
     if (pin_no < GPIO_0 || pin_no > GPIO_23)
         return -1;
-    
+
     SET_BIT(__gpio_base->output_valOutput, pin_no);
     return 0;
 }
@@ -172,7 +172,7 @@ int gpio_pin_set(int pin_no) {
 int gpio_pin_clear(int pin_no) {
     if (pin_no < GPIO_0 || pin_no > GPIO_23)
         return -1;
-    
+
     CLEAR_BIT(__gpio_base->output_valOutput, pin_no);
     return 0;
 }

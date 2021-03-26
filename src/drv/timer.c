@@ -22,12 +22,31 @@
  * SOFTWARE.
  */
 
-#include <pwm.h>
+#include <timer.h>
 
-/**
- * @brief Holds the PWM instance base address, local to this file!
- *
- */
-static volatile pwm_s *__pwm0_base = (volatile pwm_s*)PWM0_BASE;
-static volatile pwm_s *__pwm1_base = (volatile pwm_s*)PWM1_BASE;
-static volatile pwm_s *__pwm2_base = (volatile pwm_s*)PWM2_BASE;
+#define MTIMECMP_OFFSET (0x4000)
+#define MTIME_OFFSET    (0xbff8)
+
+static volatile uint64_t *_mtimecmp = (volatile uint64_t*)(CLINT_BASE + MTIMECMP_OFFSET);
+static volatile uint64_t *_mtime    = (volatile uint64_t*)(CLINT_BASE + MTIME_OFFSET);
+
+static timer_s __timer;
+
+static void update_timer(void) {
+    *_mtimecmp = *_mtime + __timer.period;
+}
+
+void timer_setup(uint32_t period, timer_handler_t handler) {
+    __timer.period = period;
+    __timer.handler = handler;
+
+    update_timer();
+}
+
+void timer_hanlder (void) {
+    if (__timer.handler)
+        __timer.handler();
+
+    if (__timer.period)
+        update_timer();
+}
