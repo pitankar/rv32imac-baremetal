@@ -28,7 +28,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Install toolchain
         run: |
-          apt-get install gdb-multiarch gcc-riscv64-unknown-elf
+          sudo apt-get install gdb-multiarch gcc-riscv64-unknown-elf
       
       - name: Check the compilation works correctly
         run: make
