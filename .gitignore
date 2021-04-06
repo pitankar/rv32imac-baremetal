@@ -1,6 +1,5 @@
 doc/
 .vscode/
 build/
-toolchain/
 *.elf
 *.hex

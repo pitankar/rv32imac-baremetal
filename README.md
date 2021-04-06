@@ -9,8 +9,7 @@ This repository implements the basic bare metal code that if needed to boot up a
 ├── README.md
 ├── scripts
 │   ├── debug.gdb
-│   ├── layout.ld
-│   └── setup.sh
+│   └── layout.ld
 └── src
     ├── drv
     │   ├── gpio.c
@@ -39,71 +38,50 @@ To assist with the compiling, uploading the code and debugging using gdb, we hav
 
 ---
 # Setup
-You will need the `risc-v-gcc` and `openocd` to be able to compile and upload the output to the board. The `setup.sh` script in the `scripts` directory can be used to automatically setup the tools required. The script will download and extract the right versions of `gcc` and `openocd` which are also available as part of [sifive freedom-tools - August 2020 Tools Release](https://github.com/sifive/freedom-tools/releases/tag/v2020.08.0). To launch the setup execute the following:
+Install the required components using the following command
 ```
-make
+sudo apt install -y minicom gdb-multiarch gcc-riscv64-unknown-elf
 ```
-
-Make detects the missing `toolchain/` directory and executes the following on user's behalf. If Make fails for whatever reason, you can manually execute the following to install the required tools.
-
-```shell
-chmod +x scripts/setup.sh
-./scripts/setup.sh
-```
-
-If all goes well you should see the following prints
-```shell
-❯ ./scripts/setup.sh
---------------START------------------------
-Creating riscv_tools directory
-Downloading the right RISC-V GCC Version
---2021-02-07 22:11:17--  https://static.dev.sifive.com/dev-tools/freedom-tools/v2020.08/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz
-Resolving static.dev.sifive.com (static.dev.sifive.com)... 13.249.214.81, 13.249.214.96, 13.249.214.75, ...
-Connecting to static.dev.sifive.com (static.dev.sifive.com)|13.249.214.81|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 356973576 (340M) [application/x-gzip]
-Saving to: ‘riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz’
-
-riscv64-unknown-elf-gcc-10.1.0-2020.08 100%[===========================================================================>] 340.44M  29.2MB/s    in 11s
-
-2021-02-07 22:11:29 (29.8 MB/s) - ‘riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz’ saved [356973576/356973576]
-
-Downloading the right openocd Version
---2021-02-07 22:11:29--  https://static.dev.sifive.com/dev-tools/freedom-tools/v2020.08/riscv-openocd-0.10.0-2020.08.1-x86_64-linux-ubuntu14.tar.gz
-Resolving static.dev.sifive.com (static.dev.sifive.com)... 13.249.214.53, 13.249.214.75, 13.249.214.96, ...
-Connecting to static.dev.sifive.com (static.dev.sifive.com)|13.249.214.53|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 3485902 (3.3M) [application/x-gzip]
-Saving to: ‘riscv-openocd-0.10.0-2020.08.1-x86_64-linux-ubuntu14.tar.gz’
-
-riscv-openocd-0.10.0-2020.08.1-x86_64- 100%[===========================================================================>]   3.32M  --.-KB/s    in 0.1s
-
-2021-02-07 22:11:29 (22.8 MB/s) - ‘riscv-openocd-0.10.0-2020.08.1-x86_64-linux-ubuntu14.tar.gz’ saved [3485902/3485902]
-
-Extracting riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz
-Done!
-Extracting riscv-openocd-0.10.0-2020.08.1-x86_64-linux-ubuntu14.tar.gz
-Done!
-Doing Cleanup!
-Done!
-The Downloads are still retained in toolchain/ and will be used the next time this setup is run again!
-Please delete them manually if you think you may not need those!
---------------END--------------------------
-```
-Make may also attempt to build the source and you may see few more prints.
-
-**Note that the downloads are retained and used next time the setup is run again.**
 
 ----
 ## Testing setup
-If you want to ensure that everything works as expected then you can build the default source without any changes and upload to the board. You can run the following in sequence:
 
-Build the source and upload to board
+Plugin the board into the USB port. And connect to it using `minicom` as follows:
+```shell
+sudo minicom -D /dev/ttyACM0
+```
+All the messages coming from the board should be seen on minicom. You may see output like:
+```shell
+Welcome to minicom 2.7.90
+
+OPTIONS: I18n 
+Compiled on Jul 26 2020, 10:44:57.
+Port /dev/ttyACM0, 09:50:11
+
+Press CTRL-A Z for help on special keys
+```
+
+Next, build the source and upload to board by executing:
 ```shell
 make upload
 ```
 
-If you see the `blue` LED blinking and `Hello, World! :)` on uart0 port, then everything is working as expected! :)
+If you see the `blue` LED blinking and see the following on the `minicom` screen:
+```shell
+Welcome to minicom 2.7.90
+
+OPTIONS: I18n 
+Compiled on Jul 26 2020, 10:44:57.
+Port /dev/ttyACM0, 09:50:11
+
+Press CTRL-A Z for help on special keys
+
+Bench Clock Reset Complete
+
+ATE0--> Send Flag error: #255 #255 #255 #255 AT+BLEINIT=0--> Send Flag error: #255 #255 #255 #255 AT+CWMODE=0--> Se 
+Hello, World! :)
+```
+then everything is working as expected! To exit `minicom` use `CTRL-a + x`.
 
 ---
 # Flashing/Uploading to Board
@@ -120,15 +98,15 @@ make debug
 you should see the following
 ```shell
 ❯ make debug
-Open On-Chip Debugger 0.10.0+dev (SiFive OpenOCD 0.10.0-2020.11.0)
+Open On-Chip Debugger 0.10.0+dev-snapshot (2020-08-19-11:14)
 Licensed under GNU GPL v2
-For bug reports:
-        https://github.com/sifive/freedom-tools/issues
+For bug reports, read
+        http://openocd.org/doc/doxygen/bugs.html
 Info : J-Link OB-K22-SiFive compiled Oct 30 2020 11:20:31
 Info : Hardware version: 1.00
 Info : VTarget = 3.300 V
 Info : clock speed 4000 kHz
-Info : JTAG tap: riscv.cpu tap/device found: 0x20000913 (mfg: 0x489 (SiFive Inc), part: 0x0000, ver: 0x2)
+Info : JTAG tap: riscv.cpu tap/device found: 0x20000913 (mfg: 0x489 (SiFive, Inc.), part: 0x0000, ver: 0x2)
 Info : datacount=1 progbufsize=16
 Info : Disabling abstract command reads from CSRs.
 Info : Examined RISC-V core; found 1 harts
@@ -148,30 +126,30 @@ make gdb
 This will connect with the debug server and drop the `gdb` prompt. you should see something as below:
 ```shell
 ❯ make gdb
-GNU gdb (SiFive GDB 9.1.0-2020.08.2) 9.1
+GNU gdb (Ubuntu 9.2-0ubuntu2) 9.2
 Copyright (C) 2020 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 Type "show copying" and "show warranty" for details.
-This GDB was configured as "--host=x86_64-pc-linux-gnu --target=riscv64-unknown-elf".
+This GDB was configured as "x86_64-linux-gnu".
 Type "show configuration" for configuration details.
 For bug reporting instructions, please see:
-<https://github.com/sifive/freedom-tools/issues>.
+<http://www.gnu.org/software/gdb/bugs/>.
 Find the GDB manual and other documentation resources online at:
     <http://www.gnu.org/software/gdb/documentation/>.
 
 For help, type "help".
 Type "apropos word" to search for commands related to "word"...
-Reading symbols from firmware.elf...
-_start () at start.S:29
-29      1:  j 1b
-JTAG tap: riscv.cpu tap/device found: 0x20000913 (mfg: 0x489 (SiFive Inc), part: 0x0000, ver: 0x2)
-keep_alive() was not invoked in the 1000 ms timelimit. GDB alive packet not sent! (1919 ms). Workaround: increase "set remotetimeout" in GDB
+Reading symbols from build/firmware.elf...
+_start () at src/start.S:31
+31      1:  j 1b            # Spin forever
+JTAG tap: riscv.cpu tap/device found: 0x20000913 (mfg: 0x489 (SiFive, Inc.), part: 0x0000, ver: 0x2)
+keep_alive() was not invoked in the 1000 ms timelimit. GDB alive packet not sent! (1847 ms). Workaround: increase "set remotetimeout" in GDB
 (gdb)
 ```
 
-`monitor` and `gdb` can be used to debug further.
+You can then use the usual `monitor` and `gdb` commands to debug further.
 
 ---
 # Trouble Shooting

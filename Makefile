@@ -22,34 +22,20 @@
 # SOFTWARE.
 #
 
-# execute ./scripts/setup.sh to get the tools
-TOOLS = toolchain
-
-# automatically initiate toolchain installation if it was not present already
-ifeq ($(wildcard $(TOOLS)),)
-setup: ./scripts/setup.sh 
-	@echo "Toolchain not found! Initiating a install!"
-	@chmod +x ./scripts/setup.sh
-	@./scripts/setup.sh
-	@make
-endif
-
-# Infer the path of tools from the TOOLS
-RISC_V_GCC_PATH_BIN ?= $(TOOLS)/gcc
-OPENOCD_PATH ?= $(TOOLS)/openocd
+# openocd
+OPENOCD = openocd
 
 # openocd board config
-OPENOC_CONFIG_FILE = $(TOOLS)/openocd/share/openocd/scripts/board/sifive-hifive1-revb.cfg
+OPENOC_CONFIG_FILE = board/sifive-hifive1-revb.cfg
 
-# gcc and gdb
-RISCV_TOOL = $(RISC_V_GCC_PATH_BIN)/bin/riscv64-unknown-elf
+# gcc
+RISCV_TOOL = riscv64-unknown-elf
 RISCV_GCC = $(RISCV_TOOL)-gcc
-RISCV_GDB = $(RISCV_TOOL)-gdb
 RISCV_NM = $(RISCV_TOOL)-nm
 RISCV_OBJDUMP = $(RISCV_TOOL)-objdump
 
-# openocd
-OPENOCD = $(OPENOCD_PATH)/bin/openocd 
+# gdb
+RISCV_GDB = gdb-multiarch
 
 # compiler options
 CFLAGS = -march=rv32imac -mabi=ilp32 -Wall -O0 -nostdlib -nostartfiles -ffreestanding -ggdb
