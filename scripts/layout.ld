@@ -31,7 +31,8 @@ MEMORY
 
 SECTIONS
 {
-    .text : { 
+    .text : {
+        *(.init*)
         *(.text*)
     } > ROM
     .rodata : {

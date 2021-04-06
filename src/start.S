@@ -23,6 +23,7 @@
 #
 
 # Execution starts from here
+.section .init
 .globl _start
 _start:
     lui sp, 0x80004 # Load the SP with end of RAM
