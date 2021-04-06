@@ -61,18 +61,23 @@ all: $(BUILD)/$(FIRMWARE).elf
 
 $(BUILD)/$(FIRMWARE).elf: $(SRC)
 	@mkdir -p $(BUILD) 
-	@$(RISCV_GCC) $(CFLAGS) -I$(INC) $^ -T scripts/layout.ld -o $@
+	@$(RISCV_GCC) $(CFLAGS) -I$(INC) $^ -T layout.ld -o $@
 	@$(RISCV_NM) $@ > $(BUILD)/$(FIRMWARE).sections
 	@$(RISCV_OBJDUMP) -d $@ > $(BUILD)/$(FIRMWARE).disassembly
+	@echo "target extended-remote localhost:3333" > $(BUILD)/$(FIRMWARE).gdb
+	@echo "monitor reset halt" >> $(BUILD)/$(FIRMWARE).gdb
 
 upload: $(BUILD)/$(FIRMWARE).elf
-	@sudo $(OPENOCD) -f $(OPENOC_CONFIG_FILE) -c "program $^ verify reset exit"
+	@echo -n "Uploading..."
+	@sudo $(OPENOCD) -f $(OPENOC_CONFIG_FILE) -c "program $^ verify reset exit" 2>/dev/null
+	@echo "\nDone :)"
 
 debug: $(BUILD)/$(FIRMWARE).elf
-	@sudo $(OPENOCD) -f $(OPENOC_CONFIG_FILE)
+	@echo "GDB server active... \nUse Ctrl+c to close the server!"
+	@sudo $(OPENOCD) -f $(OPENOC_CONFIG_FILE) 2>/dev/null
 
 gdb: $(BUILD)/$(FIRMWARE).elf
-	@$(RISCV_GDB) $^ --command=scripts/debug.gdb
+	@$(RISCV_GDB) -q $^ --command=$(BUILD)/$(FIRMWARE).gdb
 
 clean:
 	@rm -rf build/
