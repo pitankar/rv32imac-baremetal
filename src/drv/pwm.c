@@ -31,3 +31,51 @@
 static volatile pwm_s *__pwm0_base = (volatile pwm_s*)PWM0_BASE;
 static volatile pwm_s *__pwm1_base = (volatile pwm_s*)PWM1_BASE;
 static volatile pwm_s *__pwm2_base = (volatile pwm_s*)PWM2_BASE;
+
+static volatile pwm_s* get_pwm_addr(pwm_e pwm_no) {
+    switch (pwm_no) {
+        case PWM0: return __pwm0_base;
+        case PWM1: return __pwm1_base;
+        case PWM2: return __pwm2_base;
+    }
+
+    return (volatile pwm_s*)0;
+}
+
+void pwm_config(pwm_e pwm_no, pwmcfg_s *config) {
+    volatile pwm_s *pwm = get_pwm_addr(pwm_no);
+
+    pwm->pwmcfg.pwmscale = config->pwmscale;
+    pwm->pwmcfg.pwmsticky = config->pwmsticky;
+    pwm->pwmcfg.pwmzerocmp = config->pwmzerocmp;
+    pwm->pwmcfg.pwmdeglitch = config->pwmdeglitch;
+    pwm->pwmcfg.pwmenalways = config->pwmenalways;
+    pwm->pwmcfg.pwmenoneshot = config->pwmenoneshot;
+    pwm->pwmcfg.pwmcmp0center = config->pwmcmp0center;
+    pwm->pwmcfg.pwmcmp1center = config->pwmcmp1center;
+    pwm->pwmcfg.pwmcmp2center = config->pwmcmp2center;
+    pwm->pwmcfg.pwmcmp3center = config->pwmcmp3center;
+    pwm->pwmcfg.pwmcmp0gang = config->pwmcmp0gang;
+    pwm->pwmcfg.pwmcmp1gang = config->pwmcmp1gang;
+    pwm->pwmcfg.pwmcmp2gang = config->pwmcmp2gang;
+    pwm->pwmcfg.pwmcmp3gang = config->pwmcmp3gang;
+    pwm->pwmcfg.pwmcmp0ip = config->pwmcmp0ip;
+    pwm->pwmcfg.pwmcmp1ip = config->pwmcmp1ip;
+    pwm->pwmcfg.pwmcmp2ip = config->pwmcmp2ip;
+    pwm->pwmcfg.pwmcmp3ip = config->pwmcmp3ip;
+}
+
+void pwm_set_counter(pwm_e pwm_no, uint32_t count) {
+    volatile pwm_s *pwm = get_pwm_addr(pwm_no);
+    pwm->pwmcount.pwmcount = count;
+}
+
+void pwm_set_cmp(pwm_e pwm_no, pwm_cpm_e pwm_cmp_no, uint16_t count) {
+    volatile pwm_s *pwm = get_pwm_addr(pwm_no);
+    pwm->pwmcpm[pwm_cmp_no].pwmcmp = count;
+}
+
+void pwm_set_scaled_count(pwm_e pwm_no, uint16_t pwms) {
+    volatile pwm_s *pwm = get_pwm_addr(pwm_no);
+    pwm->pwms.pwms = pwms;
+}

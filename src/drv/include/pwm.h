@@ -28,6 +28,19 @@
 #include <hifive_rev_b.h>
 #include <stdint.h>
 
+typedef enum _pwm_e {
+    PWM0,
+    PWM1,
+    PWM2
+} pwm_e;
+
+typedef enum _pwm_cmp_e {
+    PWM_CMP_0,
+    PWM_CMP_1,
+    PWM_CMP_2,
+    PWM_CMP_3
+} pwm_cpm_e;
+
 typedef struct _pwmcfg_s {
     uint32_t pwmscale : 4;
     uint32_t reserved0: 4;
@@ -52,7 +65,6 @@ typedef struct _pwmcfg_s {
     uint32_t pwmcmp2ip: 1;
     uint32_t pwmcmp3ip: 1;
 } pwmcfg_s;
-
 
 typedef struct _pwmcount_s {
     uint32_t pwmcount: 31;
@@ -84,5 +96,10 @@ typedef struct _pwm_s {
     uint32_t reserved2[3];
     pwmcpm_s pwmcpm[PWM_NUM];
 } pwm_s;
+
+void pwm_config(pwm_e pwm_no, pwmcfg_s *config);
+void pwm_set_counter(pwm_e pwm_no, uint32_t count);
+void pwm_set_cmp(pwm_e pwm_no, pwm_cpm_e pwm_cmp_no, uint16_t count);
+void pwm_set_scaled_count(pwm_e pwm_no, uint16_t pwms);
 
 #endif
